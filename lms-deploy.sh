@@ -171,7 +171,7 @@ pm.start_servers = 4
 pm.min_spare_servers = 2
 pm.max_spare_servers = 6
 
-php_admin_value[open_basedir] = /proc/uptime:${LMS_DIR}:/etc/lms/lms.ini:${APP_DIR}/var/sessions:${APP_DIR}/var/tmp:${BACKUP_DIR}
+php_admin_value[open_basedir] = /bin/who:/bin/uname:/proc/cpuinfo:/proc/net/arp:/proc/loadavg:/proc/uptime:${LMS_DIR}:/etc/lms/lms.ini:${APP_DIR}/var/sessions:${APP_DIR}/var/tmp:${BACKUP_DIR}
 php_admin_value[session.save_path] = ${APP_DIR}/var/sessions
 php_admin_value[upload_tmp_dir] = ${APP_DIR}/var/tmp
 php_admin_value[sys_tmp_dir] = ${APP_DIR}/var/tmp
