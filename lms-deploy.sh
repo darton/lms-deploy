@@ -262,6 +262,7 @@ else
   echo
   echo "firewall-cmd --zone=public --add-service=https"
   echo "firewall-cmd --zone=public --permanent --add-service=https"
+  echo "firewall-cmd --reload"
   echo "certbot --apache -d $FQDN"
   echo "systemctl restart httpd.service"
 fi
