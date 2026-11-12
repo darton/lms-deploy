@@ -49,6 +49,7 @@ dnf install unzip -y
 dnf install wget -y
 dnf install file -y
 dnf install bc -y
+dnf install cronie -y
 dnf install rsync -y
 dnf install postfix -y
 dnf install s-nail -y
