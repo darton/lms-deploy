@@ -11,7 +11,7 @@
 <VirtualHost *:443>
     ServerName DOMAIN_PLACEHOLDER
     ServerAlias www.DOMAIN_PLACEHOLDER
-    DocumentRoot WEBROOT_PLACEHOLDER
+    DocumentRoot WEB_ROOT_PLACEHOLDER
 
     DirectoryIndex index.php index.html
 
@@ -25,7 +25,7 @@
 
     Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
 
-    <Directory WEBROOT_PLACEHOLDER>
+    <Directory WEB_ROOT_PLACEHOLDER>
         Options -Indexes +FollowSymLinks
         AllowOverride All
         Require all granted
