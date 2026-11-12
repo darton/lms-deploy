@@ -1,5 +1,6 @@
 # --- KONFIGURACJA ---
 DOMAIN ?= lms.example.com
+EMAIL ?= hostmaster@example.com
 
 CERT_DIR ?= /etc/pki/tls/certs
 KEY_DIR ?= /etc/pki/tls/private
@@ -28,10 +29,11 @@ PHP_SOCKET ?= /run/php-fpm/$(DOMAIN).sock
 
 # --------------------
 
-.PHONY: help issue install vhost setup renew check
+.PHONY: help get issue install vhost setup renew check
 
 help:
 	@echo "Dostępne komendy:"
+	@echo "  make get         - Pobiera i instaluje acme.sh dla $(EMAIL)"
 	@echo "  make issue       - Wystawia nowy certyfikat przez acme.sh (DNS-01)"
 	@echo "  make install     - Konfiguruje acme.sh do automatycznej instalacji certyfikatu"
 	@echo "  make php-fpm     - Generuje plik konfiguracyjny puli PHP-FPM dla $(DOMAIN)"
@@ -39,6 +41,10 @@ help:
 	@echo "  make setup       - Wykonuje pełną konfigurację krok po kroku (issue -> install -> vhost)"
 	@echo "  make renew       - Wymusza odnowienie certyfikatu i wdrożenie go"
 	@echo "  make check       - Sprawdza poprawność konfiguracji serwera WWW"
+
+get:
+	@echo "[+] Pobieranie i instalacja acme.sh dla $(EMAIL)"
+	curl https://get.acme.sh |sh -s email=$(EMAIL)
 
 issue:
 	@echo "[+] Wystawianie certyfikatu dla $(DOMAIN) przy użyciu Let's Encrypt i wtyczki $(DNS_PLUGIN)..."
@@ -95,3 +101,4 @@ renew:
 check:
 	@echo "[+] Sprawdzanie konfiguracji serwera $(WEB_SERVICE)..."
 	httpd -t
+	php-fpm -t
