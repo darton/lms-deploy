@@ -57,14 +57,14 @@ get:
 issue:
 	@echo "[+] Wystawianie certyfikatu dla $(DOMAIN) przy użyciu Let's Encrypt i wtyczki $(DNS_PLUGIN)..."
 	ISPC_User=$(ISPC_User) ISPC_Password=$(ISPC_Password) ISPC_Api=$(ISPC_Api) ISPC_Api_Insecure=$(ISPC_Api_Insecure) \
-	$(ACME_SH) --set-default-ca --server letsencrypt
+                $(ACME_SH) --set-default-ca --server letsencrypt
 	ISPC_User=$(ISPC_User) ISPC_Password=$(ISPC_Password) ISPC_Api=$(ISPC_Api) ISPC_Api_Insecure=$(ISPC_Api_Insecure) \
-	$(ACME_SH) --issue --dns $(DNS_PLUGIN) -d $(DOMAIN) --dnssleep $(DNS_SLEEP)
+                $(ACME_SH) --issue --dns $(DNS_PLUGIN) -d $(DOMAIN) --dnssleep $(DNS_SLEEP)
 	@echo "[+] Certyfikat został pomyślnie wystawiony."
 
 install:
 	@echo "[+] Konfigurowanie automatycznej instalacji certyfikatu w ścieżkach systemowych..."
-	$(ACME_SH) --install-cert -d $(DOMAIN) \
+	sudo $(ACME_SH) --install-cert -d $(DOMAIN) \
                 --cert-file       $(CERT_DIR)/$(DOMAIN).crt \
                 --key-file        $(KEY_DIR)/$(DOMAIN).key \
                 --fullchain-file  $(CERT_DIR)/$(DOMAIN)-fullchain.crt \
@@ -81,15 +81,15 @@ php-fpm:
 	sed -i 's|APP_USER_PLACEHOLDER|$(APP_USER)|g' php-fpm.tmp
 	sed -i 's|APP_GROUP_PLACEHOLDER|$(APP_GROUP)|g' php-fpm.tmp
 	sed -i 's|BACKUP_DIR_PLACEHOLDER|$(BACKUP_DIR)|g' php-fpm.tmp
-	mv php-fpm.tmp $(PHP_FPM_CONF)
-	chmod 644 $(PHP_FPM_CONF)
+	sudo mv php-fpm.tmp $(PHP_FPM_CONF)
+	sudo chmod 644 $(PHP_FPM_CONF)
 	@echo "[+] Pula PHP-FPM została wdrożona."
 
 vhost: php-fpm
 	@echo "[+] Tworzenie katalogu dla strony: $(WEB_ROOT)..."
-	install -d -m 755 -o $(APP_USER) -g $(APP_GROUP) $(WEB_ROOT)
-	install -d -m 755 -o $(APP_USER) -g $(APP_GROUP) $(APP_ROOT)/var/sessions
-	install -d -m 755 -o $(APP_USER) -g $(APP_GROUP) $(APP_ROOT)/var/tmp
+	sudo install -d -m 755 -o $(APP_USER) -g $(APP_GROUP) $(WEB_ROOT)
+	sudo install -d -m 755 -o $(APP_USER) -g $(APP_GROUP) $(APP_ROOT)/var/sessions
+	sudo install -d -m 755 -o $(APP_USER) -g $(APP_GROUP) $(APP_ROOT)/var/tmp
 	@echo "[+] Generowanie vhosta z szablonu vhost.template..."
 	cp vhost.template $(CONF_FILE)
 	sed -i 's|DOMAIN_PLACEHOLDER/$(DOMAIN)|g' $(CONF_FILE)
@@ -97,13 +97,15 @@ vhost: php-fpm
 	sed -i 's|CERT_DIR_PLACEHOLDER|$(CERT_DIR)|g' $(CONF_FILE)
 	sed -i 's|KEY_DIR_PLACEHOLDER|$(KEY_DIR)|g' $(CONF_FILE)
 	sed -i 's|PHP_SOCKET_PLACEHOLDER|$(PHP_SOCKET)|g' $(CONF_FILE)
+	sudo mv vhost.tmp $(CONF_FILE)
+	sudo chmod 644 $(CONF_FILE)
 	@echo "[+] Konfiguracja dla vhosta gotowq."
 	$(MAKE) check
 
 deploy: issue install vhost
 	@echo "[+] Pełna konfiguracja domeny $(DOMAIN) zakończona sukcesem!"
-	systemctl restart $(WEB_SERVICE)
-	systemctl restart php-fpm
+	sudo systemctl restart $(WEB_SERVICE)
+	sudo systemctl restart php-fpm
 
 renew:
 	@echo "[+] Odnawianie i wdrażanie certyfikatu dla $(DOMAIN)..."
@@ -114,4 +116,4 @@ check:
 	@echo "[+] Sprawdzanie poprawności konfiguracji PHP-FPM..."
 	php-fpm -t
 	@echo "[+] Sprawdzanie konfiguracji serwera $(WEB_SERVICE)..."
-	httpd -t
+	sudo httpd -t
